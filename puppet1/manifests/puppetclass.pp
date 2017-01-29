@@ -1,0 +1,38 @@
+class puppetclass {
+
+Package {ensure => 'installed', }
+package { 'vim':}
+package { 'curl':}
+package { 'git':}
+
+user {'monitor':
+
+ensure => present,
+shell => '/bin/bash',
+home => '/home/monitor',
+managehome => true,
+
+}
+
+exec {'memory_check':
+command => "/usr/bin/wget -q https://raw.githubusercontent.com/beloso16/paymaya/master/memory_check -O /home/monitor/scripts",
+creates => "/home/monitor/scripts",
+}
+
+file { '/home/monitor/src/': ensure => 'directory',}
+
+file { '/home/monitor/src/my_memory_check/': 
+
+ensure => 'link',
+target => '/home/monitor/scripts/memory_check',
+
+}
+
+cron { 'my_memory_check':
+command => '/home/monitor/src/my_memory_check/',
+hour => '*',
+minute => '*/5',
+
+}
+
+}
